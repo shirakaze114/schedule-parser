@@ -70,7 +70,7 @@ class SchoolParser:
         weeks, weekday, sections, note = self.curriculum_parser(time_str)
         
         if "err_time" in note:
-            description = "**MAYBE UNARRANGED COURSE**" + description
+            description = "错误：没有时间，可能未排课\n" + description
 
         if not name:
             name = fallback_name
@@ -89,10 +89,10 @@ class SchoolParser:
         describtion = ""
         col_to_description_index = [16,15,9,0,1]
         for index in col_to_description_index:
-                try:
-                    describtion += f"{self.header[index]}: {col[index]}\n"
-                except Exception as e:
-                    describtion += f"{self.header[index]}: err_col: {e}\n"
+            try:
+                describtion += f"{self.header[index]}: {col[index]}\n"
+            except Exception as e:
+                describtion += f"{self.header[index]}: err_col: {e}\n"
 
         return self.course_parser(course_id=col[0], name=col[1], teacher=col[9], time_str=col[15], location=col[16],description=describtion)
     
