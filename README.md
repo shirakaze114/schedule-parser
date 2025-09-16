@@ -7,3 +7,6 @@ Only tested on SCU URP system
 1. Go to 首页>选课管理>本学期课表
 2. Download the page
 3. Put the curriculum (本学期课表.html) into the folder
+
+## BTW
+using gh copilot so maybe >60% code are written by llm
