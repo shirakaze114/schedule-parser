@@ -87,7 +87,7 @@ class SchoolParser:
         #['203170020', '大学化学（Ⅴ）', '日历\n\n李建梅（无）', '大纲\n\n中文大纲\n\n英文大纲', '04', '2', '必修', '', '', '李建梅*', '正常', '置入', '', '', '', '3-18周 / 星期三 / 5-6节', '江安 / 一教B座 / B104']
 
         describtion = ""
-        col_to_description_index = [16,15,9,0,1]
+        col_to_description_index = [16,15,4,9,0,1]
         for index in col_to_description_index:
             try:
                 describtion += f"{self.header[index]}: {col[index]}\n"
