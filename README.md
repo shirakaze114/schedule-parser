@@ -1,5 +1,5 @@
 # Schedule Parser
-Turn the term curriculum into
+Turn the term curriculum into ics format  
 Only tested on SCU URP system  
 
 ## How to use
