@@ -31,6 +31,11 @@ class Course:
 
 
     def get_section_period(self):
+        campus = self.location.split(" / ")[0]
+        time_table = time_table_huaxi
+        if campus == "江安":
+            time_table = time_table_jiangan
+        
         return (time_table[self.sections[0]][0], time_table[self.sections[-1]][1])
 
     def course_to_events(self):
