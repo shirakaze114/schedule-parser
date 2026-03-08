@@ -1,52 +1,44 @@
-from school_paser import SchoolParser
-from bs4 import BeautifulSoup
+import datetime
 
-parser = SchoolParser()
+from selenium_courses import get_course_json
+from course import Course
+from icalendar import Calendar, Event
 
-def parse_html(html: str):
-    soup = BeautifulSoup(html, "html.parser")
-    table = soup.find("table", {"class": "table table-striped table-bordered"})
-    # read header
-    header_cols = [element.text.strip() for element in table.find_all("tr")[0].find_all("th")]
-
-    print(header_cols)  # Print the header columns for debugging
-    parser.set_header(header_cols)
-
-    rows = table.find_all("tr")[1:]  # skip the header
-    
-    for row_index in range(len(rows)):
-        row = rows[row_index]
-
-        cols = [element.text.strip() for element in row.find_all("td")]
-        if len(cols) == 2:
-            new_index = row_index
-            new_cols = []
-            while True:
-                new_index-=1
-                new_cols = [element.text.strip() for element in rows[new_index].find_all("td")]
-                if len(new_cols) != 2:
-                    break
-
-            new_cols[15] = cols[0]
-            new_cols[16] = cols[1]
-            cols = new_cols
-
-
-        #['203170020', '大学化学（Ⅴ）', '日历\n\n李建梅（无）', '大纲\n\n中文大纲\n\n英文大纲', '04', '2', '必修', '', '', '李建梅*', '正常', '置入', '', '', '', '3-18周 / 星期三 / 5-6节', '江安 / 一教B座 / B104']
-        print(cols)  # Print the extracted columns for debugging
-        #print(parser.curriculum_parser(time_str=cols[15]))
-        parser.col_parser(cols)
-
-        
-        
 def main():
-    html = open("本学期课程表.html", "r", encoding="utf-8").read()
-    #print(html)
-    parse_html(html)
-    parser.generate_ics()
-    
+    raw_data = get_course_json(1)
+    # print(raw_data)
 
+    courses = []
 
+    print("选课总学分:", raw_data['allUnits'])
+    courses_index = raw_data['xkxx'][0].keys()
+    for index in courses_index:
+        course = raw_data['xkxx'][0][index]
+        if len(course['timeAndPlaceList']) > 0:
+            # 当成多个课程来处理，每个 timeAndPlaceList 的元素都生成一个课程
+            for i in range(len(course['timeAndPlaceList'])):
+                course_copy = course.copy()
+                course_copy['timeAndPlaceList'] = [course['timeAndPlaceList'][i]]
+                # print(course_copy)
+                courses.append(Course(course_copy))
+        else:
+            courses.append(Course(course))
+
+    # 生成 iCalendar 文件
+    cal = Calendar()
+    cal.add('prodid', '-//Schedule Parser//mxgmn//')
+    cal.add('version', '2.0')
+    #filename schedule-{{timestamp}}.ics
+    filename = f"schedule-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.ics"
+
+    for course in courses:
+        events = course.course_to_events()
+        for event in events:
+            cal.add_component(event)
+    with open(filename, 'wb') as f:
+        f.write(cal.to_ical())
+
+    print(f"课程信息已保存到 {filename} 文件中！")
 
 
 if __name__ == "__main__":
