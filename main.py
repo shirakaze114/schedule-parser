@@ -5,6 +5,7 @@ from course import Course
 from icalendar import Calendar, Event
 
 def main():
+    print("Link: https://github.com/shirakaze114/schedule-parser")
     raw_data = get_course_json(1)
     # print(raw_data)
 

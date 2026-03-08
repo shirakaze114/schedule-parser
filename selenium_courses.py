@@ -74,7 +74,7 @@ def get_course_json(save=1):
     try:
         # 打开登录页面
         driver.get(LOGIN_URL)
-        print("已打开登录页面，请登录...")
+        print("已打开登录页面，请登录...\n由于 SCU 教务系统使用的是 HTTP, 如果弹出了安全警告，请选择继续访问（不安全）以进入登录页面")
 
         # 等待登录成功 - 检测特定元素
         wait = WebDriverWait(driver, timeout=300)  # 最多等待 5 分钟
