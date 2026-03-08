@@ -20,6 +20,7 @@ install python and pip
 
 then
 ```bash
+$ git clone https://github.com/shirakaze114/schedule-parser --depth=1
 $ pip install -r requirements.txt
 $ python main.py
 ```
