@@ -23,7 +23,9 @@ def main():
                 # print(course_copy)
                 courses.append(Course(course_copy))
         else:
-            courses.append(Course(course))
+            new_course = Course(course)
+            print('课程没有安排时间:', new_course.name + " " + new_course.courseid)
+            courses.append(new_course)
 
     # 生成 iCalendar 文件
     cal = Calendar()

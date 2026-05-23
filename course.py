@@ -4,7 +4,26 @@ from config import *
 
 class Course:
     def __init__(self, course:dict):
-        tmp_tapl = course['timeAndPlaceList'][0]
+        self.no_schedule = len(course.get('timeAndPlaceList', [])) == 0
+        
+        if self.no_schedule:
+            tmp_tapl = {
+                'coureNumber': course.get('coureNumber', course['id']['coureNumber']),
+                'coureSequenceNumber': course.get('coureSequenceNumber', course['id']['coureSequenceNumber']),
+                'coureName': course.get('coureName', course.get('courseName', fallback_name)),
+                'coursePropertiesName': course.get('coursePropertiesName', '必修'),
+                'campusName': '',
+                'teachingBuildingName': '',
+                'classroomName': fallback_location,
+                'classWeek': '1' + '0' * 24,
+                'classDay': 7,
+                'classSessions': 1,
+                'continuingSession': 12,
+                'weekDescription': '1周',
+            }
+        else:
+            tmp_tapl = course['timeAndPlaceList'][0]
+        
         self.courseid = tmp_tapl['coureNumber'] + "_" + tmp_tapl['coureSequenceNumber']
         self.name = tmp_tapl['coureName']
         self.teacher = course['attendClassTeacher']
@@ -25,6 +44,8 @@ class Course:
         
         # 生成description，包含各种信息
         desc = []
+        if self.no_schedule:
+            desc.append("（本课程没有安排时间）")
         desc.append(f"课程号_课序号: {self.courseid}")
         desc.append(f"课程名称: {self.name} \n{course['englishCourseName']}")
         desc.append(f"教师: {self.teacher}")
@@ -44,7 +65,9 @@ class Course:
         # restrictedCondition
         if course['restrictedCondition']:
             desc.append(f"选课限制: {course['restrictedCondition']}")
-
+        if course['pkbz']:
+            desc.append(f"排课备注: {course['pkbz']}")
+            
         self.description = "\n".join(desc)
         self.first_week = datetime.date.fromisoformat(first_week_day).isocalendar()[1]
 
@@ -78,10 +101,13 @@ class Course:
             # we know week and weekday, so we can calculate the date
             date = self.get_date_of_week(week)
             event = icalendar.Event()
-            extra_desc = f"本周是第 {week} 周 | 课程进度 {i+1}/{len(self.weeks)} 节"
+            if self.no_schedule:
+                extra_desc = ""
+            else:
+                extra_desc = f"本周是第 {week} 周 | 课程进度 {i+1}/{len(self.weeks)} 节\n"
             event.add('summary', self.name)
             event.add('location', self.location[0] + " " + self.location[1] + " " + self.location[2])
-            event.add('description', extra_desc + "\n" + self.description )
+            event.add('description', extra_desc + self.description )
             start_time = datetime.datetime.combine(date, datetime.datetime.strptime(self.get_section_period()[0], "%H:%M").time())
             end_time = datetime.datetime.combine(date, datetime.datetime.strptime(self.get_section_period()[1], "%H:%M").time())
             # 添加时区信息（中国标准时间 CST = UTC+8）
