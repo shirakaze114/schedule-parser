@@ -27,6 +27,7 @@ class Course:
         self.courseid = tmp_tapl['coureNumber'] + "_" + tmp_tapl['coureSequenceNumber']
         self.name = tmp_tapl['coureName']
         self.teacher = course['attendClassTeacher']
+        self.qq_group = course['qqqh']
 
         self.location = (tmp_tapl['campusName'], tmp_tapl['teachingBuildingName'], tmp_tapl['classroomName'])
         # 111111111111000000000000 处理二进制的周数表示，转换成整数列表
@@ -67,6 +68,8 @@ class Course:
             desc.append(f"选课限制: {course['restrictedCondition']}")
         if course['pkbz']:
             desc.append(f"排课备注: {course['pkbz']}")
+        if self.qq_group:
+            desc.append(f"QQ群号: {self.qq_group}")
             
         self.description = "\n".join(desc)
         self.first_week = datetime.date.fromisoformat(first_week_day).isocalendar()[1]

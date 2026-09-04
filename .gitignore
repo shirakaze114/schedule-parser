@@ -6,3 +6,4 @@ last_cookies_and_headers.json
 schedule.ics
 course_data.json
 dist/*
+Venv/*
